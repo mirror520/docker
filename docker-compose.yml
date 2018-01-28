@@ -13,7 +13,13 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - letsencrypt:/etc/letsencrypt:ro
       - ./nginx/proxy/conf/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/proxy/conf/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/proxy/conf/mysite.template:/etc/nginx/conf.d/mysite.template
+    environment:
+      - PROXY_PORT=443
+      - GITLAB_DOMAIN=gitlab.linyc.idv.tw
+      - GITLAB_HOST=gitlab
+      - GITLAB_PORT=80
+    command: /bin/sh -c "export DOLLAR='$$' && envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 
     container_name: web-proxy
 
   gitlab:
