@@ -9,6 +9,7 @@ services:
     image: nginx:alpine
     ports:
       - "443:443"
+      - "80:80"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - letsencrypt:/etc/letsencrypt:ro
@@ -28,6 +29,10 @@ services:
       - ./gitlab/logs:/var/log/gitlab
       - ./gitlab/data:/var/opt/gitlab
     environment:
-      - GITLAB_OMNIBUS_CONFIG=external_url "https://gitlab.linyc.idv.tw/"; nginx['ssl_certificate'] = "/etc/letsencrypt/live/gitlab.linyc.idv.tw/fullchain.pem"; nginx['ssl_certificate_key'] = "/etc/letsencrypt/live/gitlab.linyc.idv.tw/privkey.pem";
+      GITLAB_OMNIBUS_CONFIG: | 
+        external_url "https://gitlab.linyc.idv.tw/"
+        nginx['ssl_certificate']         = "/etc/letsencrypt/live/gitlab.linyc.idv.tw/fullchain.pem"
+        nginx['ssl_certificate_key']     = "/etc/letsencrypt/live/gitlab.linyc.idv.tw/privkey.pem"
+        nginx['redirect_http_to_https']  = true
     container_name: gitlab
 

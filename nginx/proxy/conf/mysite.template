@@ -1,4 +1,9 @@
 server {
+    listen 80;
+    return 301 https://${DOLLAR}host${DOLLAR}request_uri;
+}
+
+server {
     listen       ${PROXY_PORT} ssl http2;
     server_name  ${GITLAB_DOMAIN};
 
