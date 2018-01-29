@@ -20,7 +20,7 @@ server {
     ssl_trusted_certificate   /etc/letsencrypt/live/${GITLAB_DOMAIN}/chain.pem;
 
     location / {
-        proxy_pass       http://${GITLAB_HOST}:${GITLAB_PORT};
+        proxy_pass       https://gitlab:443;
         proxy_set_header Host              ${DOLLAR}http_host;
         proxy_set_header X-Real-IP         ${DOLLAR}remote_addr;
         proxy_set_header X-Forwarded-For   ${DOLLAR}proxy_add_x_forwarded_for;
