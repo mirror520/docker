@@ -1,0 +1,28 @@
+version: "3"
+
+volumes:
+  letsencrypt:
+    external: true
+
+networks:
+  default:
+    external:
+      name: docker-network
+
+services:
+  gitlab:
+    image: gitlab/gitlab-ce
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - letsencrypt:/etc/letsencrypt:ro
+      - ./config:/etc/gitlab
+      - ./logs:/var/log/gitlab
+      - ./data:/var/opt/gitlab
+    environment:
+      GITLAB_OMNIBUS_CONFIG: | 
+        external_url "https://gitlab.linyc.idv.tw/"
+        nginx['ssl_certificate']         = "/etc/letsencrypt/live/gitlab.linyc.idv.tw/fullchain.pem"
+        nginx['ssl_certificate_key']     = "/etc/letsencrypt/live/gitlab.linyc.idv.tw/privkey.pem"
+        nginx['redirect_http_to_https']  = true
+    container_name: gitlab
+

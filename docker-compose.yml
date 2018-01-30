@@ -4,6 +4,11 @@ volumes:
   letsencrypt:
     external: true
 
+networks:
+  default:
+    external:
+      name: docker-network
+
 services:
   web-proxy:
     image: nginx:alpine
@@ -19,20 +24,4 @@ services:
       - GITLAB_DOMAIN=gitlab.linyc.idv.tw
     command: /bin/sh -c "export DOLLAR='$$' && envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 
     container_name: web-proxy
-
-  gitlab:
-    image: gitlab/gitlab-ce
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - letsencrypt:/etc/letsencrypt:ro
-      - ./gitlab/config:/etc/gitlab
-      - ./gitlab/logs:/var/log/gitlab
-      - ./gitlab/data:/var/opt/gitlab
-    environment:
-      GITLAB_OMNIBUS_CONFIG: | 
-        external_url "https://gitlab.linyc.idv.tw/"
-        nginx['ssl_certificate']         = "/etc/letsencrypt/live/gitlab.linyc.idv.tw/fullchain.pem"
-        nginx['ssl_certificate_key']     = "/etc/letsencrypt/live/gitlab.linyc.idv.tw/privkey.pem"
-        nginx['redirect_http_to_https']  = true
-    container_name: gitlab
 

@@ -1,2 +1,4 @@
 # Gitlab files
-gitlab/
+gitlab/config/
+gitlab/data/
+gitlab/logs/
