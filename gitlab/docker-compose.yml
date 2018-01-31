@@ -26,3 +26,13 @@ services:
         nginx['redirect_http_to_https']  = true
     container_name: gitlab
 
+  gitlab-runner:
+    image: gitlab/gitlab-runner
+    external_links:
+      - web-proxy:gitlab.linyc.idv.tw
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./gitlab-runner/config:/etc/gitlab-runner
+    container_name: gitlab-runner
+
