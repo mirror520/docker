@@ -2,4 +2,4 @@
 gitlab/config/
 gitlab/data/
 gitlab/logs/
-gitlab/gitlab-runner/
+gitlab/gitlab-runner/config/config.toml

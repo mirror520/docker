@@ -12,6 +12,9 @@ networks:
 services:
   gitlab:
     image: gitlab/gitlab-ce
+    networks:
+      default:
+        ipv4_address: 10.77.0.10
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - letsencrypt:/etc/letsencrypt:ro
@@ -27,12 +30,13 @@ services:
     container_name: gitlab
 
   gitlab-runner:
-    image: gitlab/gitlab-runner
+    image: gitlab/gitlab-runner:alpine
     external_links:
       - web-proxy:gitlab.linyc.idv.tw
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./gitlab-runner/home:/home/gitlab-runner
       - ./gitlab-runner/config:/etc/gitlab-runner
     container_name: gitlab-runner
 
