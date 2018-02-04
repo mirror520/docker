@@ -20,8 +20,24 @@ services:
       - letsencrypt:/etc/letsencrypt:ro
       - ./nginx/proxy/conf/mysite.template:/etc/nginx/conf.d/mysite.template
     environment:
-      - PROXY_PORT=443
+      - NGINX_PORT=443
+      - APP_DOMAIN=www.linyc.idv.tw
+      - API_DOMAIN=api.linyc.idv.tw
       - GITLAB_DOMAIN=gitlab.linyc.idv.tw
-    command: /bin/sh -c "export DOLLAR='$$' && envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 
+    command: /bin/sh -c "export DOLLAR='$$' && envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
     container_name: web-proxy
+
+  web-app:
+    image: nginx:alpine
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - letsencrypt:/etc/letsencrypt:ro
+      - ./nginx/app/conf/mysite.template:/etc/nginx/conf.d/mysite.template
+      - ./nginx/app/html/:/usr/share/nginx/html/
+    environment:
+      - NGINX_HOST=www.linyc.idv.tw
+      - NGINX_PORT=443
+      - NG_APP=mis-secretariat
+    command: /bin/sh -c "export DOLLAR='$$' && envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    container_name: web-app
 

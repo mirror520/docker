@@ -4,7 +4,38 @@ server {
 }
 
 server {
-    listen       ${PROXY_PORT} ssl http2;
+    listen       ${NGINX_PORT} ssl http2;
+    server_name  ${APP_DOMAIN};
+
+    add_header                Strict-Transport-Security "max-age=31536000" always;
+
+    ssl_session_cache         shared:SSL:20m;
+    ssl_session_timeout       10m;
+
+    ssl_protocols             TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers               "ECDH+AESGCM:ECDH+AES256:ECDH+AES128:!ADH:!AECDH:!MD5;";
+
+    ssl_stapling              on;
+    ssl_stapling_verify       on;
+    resolver                  8.8.8.8 ipv6=off;
+
+    ssl_certificate           /etc/letsencrypt/live/${APP_DOMAIN}/fullchain.pem;
+    ssl_certificate_key       /etc/letsencrypt/live/${APP_DOMAIN}/privkey.pem;
+    ssl_trusted_certificate   /etc/letsencrypt/live/${APP_DOMAIN}/chain.pem;
+
+    location / {
+        proxy_pass       https://web-app:443;
+        proxy_set_header Host              ${DOLLAR}http_host;
+        proxy_set_header X-Real-IP         ${DOLLAR}remote_addr;
+        proxy_set_header X-Forwarded-For   ${DOLLAR}proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto ${DOLLAR}scheme;
+        proxy_set_header X-NginX-Proxy     true;
+    }
+}
+
+server {
+    listen       ${NGINX_PORT} ssl http2;
     server_name  ${GITLAB_DOMAIN};
 
     add_header                Strict-Transport-Security "max-age=31536000" always;

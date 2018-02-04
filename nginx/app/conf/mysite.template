@@ -1,0 +1,36 @@
+server {
+    listen       ${NGINX_PORT} ssl http2;
+    server_name  ${NGINX_HOST};
+
+    add_header                Strict-Transport-Security "max-age=31536000" always;
+
+    ssl_session_cache         shared:SSL:20m;
+    ssl_session_timeout       10m;
+
+    ssl_protocols             TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers               "ECDH+AESGCM:ECDH+AES256:ECDH+AES128:!ADH:!AECDH:!MD5;";
+
+    ssl_stapling              on;
+    ssl_stapling_verify       on;
+    resolver                  8.8.8.8 ipv6=off;
+
+    ssl_certificate           /etc/letsencrypt/live/${NGINX_HOST}/fullchain.pem;
+    ssl_certificate_key       /etc/letsencrypt/live/${NGINX_HOST}/privkey.pem;
+    ssl_trusted_certificate   /etc/letsencrypt/live/${NGINX_HOST}/chain.pem;
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root      /usr/share/nginx/html/${NG_APP}/dist;
+        index     index.html index.htm;
+        try_files ${DOLLAR}uri ${DOLLAR}uri/ /index.html;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}
+

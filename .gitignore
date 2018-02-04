@@ -3,3 +3,6 @@ gitlab/config/
 gitlab/data/
 gitlab/logs/
 gitlab/gitlab-runner/config/config.toml
+
+# Angular builds
+nginx/app/html/mis-secretariat
