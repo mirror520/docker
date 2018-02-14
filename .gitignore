@@ -5,4 +5,7 @@ gitlab/logs/
 gitlab/gitlab-runner/config/config.toml
 
 # Angular builds
-nginx/app/html/mis-secretariat
+nginx/app/html/mis-secretariat/
+
+# Lumen API PHP files
+nginx/api/html/api/

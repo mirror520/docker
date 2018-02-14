@@ -1,0 +1,53 @@
+server {
+    listen       ${NGINX_PORT} ssl http2;
+    server_name  ${NGINX_HOST};
+
+    ssl_session_cache         shared:SSL:20m;
+    ssl_session_timeout       10m;
+
+    ssl_protocols             TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers               "ECDH+AESGCM:ECDH+AES256:ECDH+AES128:!ADH:!AECDH:!MD5;";
+
+    ssl_stapling              on;
+    ssl_stapling_verify       on;
+    resolver                  8.8.8.8 ipv6=off;
+
+    ssl_certificate           /etc/letsencrypt/live/${NGINX_HOST}/fullchain.pem;
+    ssl_certificate_key       /etc/letsencrypt/live/${NGINX_HOST}/privkey.pem;
+    ssl_trusted_certificate   /etc/letsencrypt/live/${NGINX_HOST}/chain.pem;
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    root      /usr/share/nginx/html/api/public;
+    index     index.php index.html index.htm;
+
+    location /docs/ {
+#        rewrite    ^/docs/(.*) /${DOLLAR}1 break;
+#        proxy_pass http://swagger-ui:8080;
+    }
+
+    location / {
+        try_files ${DOLLAR}uri ${DOLLAR}uri/ /index.php?${DOLLAR}query_string;
+    }
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    location ~ \.php${DOLLAR} {
+        try_files                ${DOLLAR}uri /index.php =404;
+        fastcgi_split_path_info  ^(.+\.php)(/.+)${DOLLAR};
+        fastcgi_pass             php-fpm:9000;
+        fastcgi_index            index.php;
+        fastcgi_param            SCRIPT_FILENAME  /var/www/html/public${DOLLAR}fastcgi_script_name;
+        include                  fastcgi_params;
+    }
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    location ~ /\.ht {
+        deny all;
+    }
+}
+
