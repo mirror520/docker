@@ -59,9 +59,16 @@ services:
     build: ./php-fpm
     image: ar0660/php:latest
     volumes:
-      - /etc/localtime:/localtime:ro
+      - /etc/localtime:/etc/localtime:ro
       - ./php-fpm/custom.ini:/usr/local/etc/php/conf.d/custom.ini:ro
       - ./nginx/api/html/api:/var/www/html
     user: "1000"
     container_name: php-fpm
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./redis/data:/data
+    container_name: redis
 

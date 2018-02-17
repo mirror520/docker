@@ -9,3 +9,6 @@ nginx/app/html/mis-secretariat/
 
 # Lumen API PHP files
 nginx/api/html/api/
+
+# Redis Data
+redis/
