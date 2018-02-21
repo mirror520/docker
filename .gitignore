@@ -1,3 +1,6 @@
+# docker--compose .env file
+.env
+
 # Gitlab files
 gitlab/config/
 gitlab/data/
@@ -12,3 +15,6 @@ nginx/api/html/api/
 
 # Redis Data
 redis/
+
+# MariaDB Data
+mariadb/

@@ -15,16 +15,22 @@ services:
     ports:
       - "443:443"
       - "80:80"
+    links:
+      - web-app:${APP_DOMAIN}
+      - web-api:${API_DOMAIN}
+    external_links:
+      - gitlab:${GITLAB_DOMAIN}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - letsencrypt:/etc/letsencrypt:ro
       - ./nginx/proxy/conf/mysite.template:/etc/nginx/conf.d/mysite.template
+      - ./nginx/run.sh:/run.sh
     environment:
-      - NGINX_PORT=443
-      - APP_DOMAIN=www.linyc.idv.tw
-      - API_DOMAIN=api.linyc.idv.tw
-      - GITLAB_DOMAIN=gitlab.linyc.idv.tw
-    command: /bin/sh -c "export DOLLAR='$$' && envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+      - NGINX_PORT=${NGINX_PORT}
+      - APP_DOMAIN=${APP_DOMAIN}
+      - API_DOMAIN=${API_DOMAIN} 
+      - GITLAB_DOMAIN=${GITLAB_DOMAIN}
+    command: /bin/sh run.sh
     container_name: web-proxy
 
   web-app:
@@ -34,30 +40,37 @@ services:
       - letsencrypt:/etc/letsencrypt:ro
       - ./nginx/app/conf/mysite.template:/etc/nginx/conf.d/mysite.template
       - ./nginx/app/html/:/usr/share/nginx/html/
+      - ./nginx/run.sh:/run.sh
     environment:
-      - NGINX_HOST=www.linyc.idv.tw
-      - NGINX_PORT=443
-      - NG_APP=mis-secretariat
-    command: /bin/sh -c "export DOLLAR='$$' && envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+      - NGINX_HOST=${APP_DOMAIN}
+      - NGINX_PORT=${NGINX_PORT}
+      - NG_APP=${NG_APP}
+    command: /bin/sh run.sh
     container_name: web-app
 
   web-api:
     image: nginx:alpine
+    links:
+      - php-fpm
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - letsencrypt:/etc/letsencrypt:ro
       - ./nginx/api/conf/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/api/conf/mysite.template:/etc/nginx/conf.d/mysite.template
       - ./nginx/api/html/api/:/usr/share/nginx/html/api/
+      - ./nginx/run.sh:/run.sh
     environment:
-      - NGINX_HOST=api.linyc.idv.tw
-      - NGINX_PORT=443
-    command: /bin/sh -c "export DOLLAR='$$' && envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+      - NGINX_HOST=${API_DOMAIN}
+      - NGINX_PORT=${NGINX_PORT}
+    command: /bin/sh run.sh
     container_name: web-api
 
   php-fpm:
     build: ./php-fpm
     image: ar0660/php:latest
+    links:
+      - redis
+      - mariadb:db
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./php-fpm/custom.ini:/usr/local/etc/php/conf.d/custom.ini:ro
@@ -72,3 +85,33 @@ services:
       - ./redis/data:/data
     container_name: redis
 
+  mariadb:
+    image: mariadb:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./mariadb/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    container_name: mariadb
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mariadb:db
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    container_name: phpmyadmin
+
+  vpn:
+    image: hwdsl2/ipsec-vpn-server
+    ports:
+      - "500:500/udp"
+      - "4500:4500/udp"
+    volumes:
+      - /lib/modules:/lib/modules:ro
+    environment:
+      - VPN_IPSEC_PSK=${VPN_IPSEC_PSK}
+      - VPN_USER=${VPN_USER}
+      - VPN_PASSWORD=${VPN_PASSWORD}
+    privileged: true
+    container_name: vpn

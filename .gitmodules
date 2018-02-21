@@ -1,0 +1,3 @@
+[submodule "secret"]
+	path = secret
+	url = https://gitlab.linyc.idv.tw/mirror520/secret.git
