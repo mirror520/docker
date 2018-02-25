@@ -17,4 +17,4 @@ nginx/api/html/api/
 redis/
 
 # MariaDB Data
-mariadb/
+mariadb/mysql/

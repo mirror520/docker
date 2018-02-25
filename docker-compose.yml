@@ -90,6 +90,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./mariadb/mysql:/var/lib/mysql
+      - ./mariadb/sql/api.sql:/docker-entrypoint-initdb.d/api.sql
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     container_name: mariadb
