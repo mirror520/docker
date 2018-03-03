@@ -24,8 +24,8 @@ server {
     index     index.php index.html index.htm;
 
     location /docs/ {
-#        rewrite    ^/docs/(.*) /${DOLLAR}1 break;
-#        proxy_pass http://swagger-ui:8080;
+        rewrite    ^/docs/(.*) /${DOLLAR}1 break;
+        proxy_pass http://swagger-ui:8080;
     }
 
     location / {

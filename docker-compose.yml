@@ -103,6 +103,15 @@ services:
       - /etc/localtime:/etc/localtime:ro
     container_name: phpmyadmin
 
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - API_URL=https://${API_DOMAIN}/swagger.json
+    container_name: swagger-ui
+
+
   vpn:
     image: hwdsl2/ipsec-vpn-server
     ports:
