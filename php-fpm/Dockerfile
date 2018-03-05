@@ -11,6 +11,9 @@ RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
  && docker-php-ext-configure gd --with-freetype-dir=/usr --with-jpeg-dir=/usr \
  && docker-php-ext-install pdo pdo_mysql soap ldap gd
 
+RUN pecl install xdebug \ 
+ && docker-php-ext-enable xdebug
+
 RUN mkdir /var/lib/browscap
 RUN wget http://browscap.org/stream?q=PHP_BrowsCapINI -O /var/lib/browscap/browscap.ini
 
