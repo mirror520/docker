@@ -2,7 +2,8 @@ FROM alpine
 
 RUN apk add --update \
     nodejs \
-    yarn
+    yarn \
+    git
 
 RUN npm install -g @angular/cli
 
